@@ -1,0 +1,48 @@
+name: ODS Pipeline Task
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  IMAGE_BASE: ${{ github.repository }}
+  IMAGE_NAME: go-toolset
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.19'
+      -
+        name: Run tests
+        run: |
+          set -o pipefail
+          make ci | sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' | sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/''
+      -
+        name: Log into ghcr.io
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Push images to ghcr.io
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          echo "::group::Push ${IMAGE_NAME} to ghcr.io"
+          docker tag localhost:5000/ods-pipeline/${IMAGE_NAME}:latest ghcr.io/${IMAGE_BASE,,}/${IMAGE_NAME}:latest
+          docker push ghcr.io/${IMAGE_BASE,,}/${IMAGE_NAME}:latest
+          echo "::endgroup::"
