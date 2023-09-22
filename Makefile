@@ -19,15 +19,15 @@ help: ## Show this help screen.
 
 ##@ Building
 
-images: image-go-toolset ## Build images.
+images: image-package ## Build images.
 .PHONY: images
 
-image-go-toolset: ## Build go-toolset image.
+image-package: ## Build package image.
 	docker build \
-        -f build/images/Dockerfile.go-toolset \
-		-t localhost:5000/ods-pipeline/go-toolset \
+        -f build/images/Dockerfile.package \
+		-t localhost:5000/ods-pipeline/package \
 		.
-.PHONY: image-go-toolset
+.PHONY: image-package
 
 tasks: ## Render tasks. Use VERSION=1.0.0 make tasks to render specific version.
 	go run github.com/opendevstack/ods-pipeline/cmd/taskmanifest \

@@ -8,7 +8,7 @@ on:
 
 env:
   IMAGE_BASE: ${{ github.repository }}
-  IMAGE_NAME: go-toolset
+  IMAGE_NAME: package
 
 jobs:
   tests:
