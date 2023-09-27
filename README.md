@@ -12,12 +12,12 @@ tasks:
     params:
     - { name: url, value: https://github.com/opendevstack/ods-pipeline-image.git }
     - { name: revision, value: main }
-    - { name: pathInRepo, value: tasks/build.yaml }
+    - { name: pathInRepo, value: tasks/package.yaml }
     workspaces:
     - { name: source, workspace: shared-workspace }
 ```
 
-See the [documentation](https://github.com/opendevstack/ods-pipeline-image/blob/main/docs/build.adoc) for details and available parameters.
+See the [documentation](https://github.com/opendevstack/ods-pipeline-image/blob/main/docs/package.adoc) for details and available parameters.
 
 ## About this repository
 
