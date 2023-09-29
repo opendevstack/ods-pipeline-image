@@ -4,9 +4,6 @@ SHELL = /bin/bash
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
-# Variables
-VERSION?=latest
-
 ##@ General
 
 # help target is based on https://github.com/operator-framework/operator-sdk/blob/master/release/Makefile.
@@ -32,7 +29,7 @@ image-package: ## Build package image.
 tasks: ## Render tasks. Use VERSION=1.0.0 make tasks to render specific version.
 	go run github.com/opendevstack/ods-pipeline/cmd/taskmanifest \
 		-data ImageRepository=ghcr.io/opendevstack/ods-pipeline-image \
-		-data Version=$(VERSION) \
+		-data Version=$$(cat version) \
 		-data PushRegistry=image-registry.openshift-image-registry.svc:5000 \
 		-template build/tasks/package.yaml \
 		-destination tasks/package.yaml

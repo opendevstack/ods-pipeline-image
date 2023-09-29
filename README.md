@@ -1,5 +1,7 @@
 # ods-pipeline-image
 
+[![Tests](https://github.com/opendevstack/ods-pipeline-image/actions/workflows/main.yaml/badge.svg)](https://github.com/opendevstack/ods-pipeline-image/actions/workflows/main.yaml)
+
 Tekton task for use with [ODS Pipeline](https://github.com/opendevstack/ods-pipeline) to build Go applications.
 
 ## Usage
