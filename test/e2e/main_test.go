@@ -32,7 +32,7 @@ func testMain(m *testing.M) int {
 	}
 	nc, cleanup, err := ttr.SetupTempNamespace(
 		cc,
-		ott.InstallODSPipeline(),
+		ott.InstallODSPipeline(nil),
 		ttr.InstallTaskFromPath(
 			filepath.Join(rootPath, "build/tasks/package.yaml"),
 			map[string]string{"PushRegistry": "ods-pipeline-registry.kind:5000"},
