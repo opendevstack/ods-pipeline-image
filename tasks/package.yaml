@@ -8,7 +8,7 @@ spec:
   description: |
     Packages applications into container images using buildah.
 
-    See https://github.com/opendevstack/ods-pipeline-image/blob/vlatest/docs/package.adoc
+    See https://github.com/opendevstack/ods-pipeline-image/blob/v0.1.0/docs/package.adoc
   params:
     - name: registry
       description: Image registry to push image to.
@@ -60,7 +60,7 @@ spec:
   steps:
     - name: package-image
       # Image is built from build/package/Dockerfile.package.
-      image: 'ghcr.io/opendevstack/ods-pipeline-image/package:latest'
+      image: 'ghcr.io/opendevstack/ods-pipeline-image/package:0.1.0'
       env:
         - name: NEXUS_URL
           valueFrom:
