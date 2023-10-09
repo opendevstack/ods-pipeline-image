@@ -14,7 +14,7 @@ listed in the changelog.
 
 ### Changed
 
-- Migrate from Tekton v1beta1 resources to v1 ([#6](https://github.com/opendevstack/ods-pipeline-go/pull/6))
+- Migrate from Tekton v1beta1 resources to v1 ([#6](https://github.com/opendevstack/ods-pipeline-image/pull/6))
 
 ## [0.1.0] - 2023-09-29
 
