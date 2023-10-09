@@ -1,6 +1,6 @@
 # File is generated; DO NOT EDIT.
 
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: 'Task'
 metadata:
   name: 'ods-pipeline-image-package'
