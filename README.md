@@ -8,7 +8,7 @@ Tekton task for use with [ODS Pipeline](https://github.com/opendevstack/ods-pipe
 
 ```yaml
 tasks:
-- name: build
+- name: package
   taskRef:
     resolver: git
     params:
