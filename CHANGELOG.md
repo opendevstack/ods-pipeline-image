@@ -10,6 +10,12 @@ listed in the changelog.
 
 ## [Unreleased]
 
+## [0.3.0] - 2023-11-09
+
+### Changed
+
+- Update Trivy from 0.36.0 to 0.47.0 ([#7](https://github.com/opendevstack/ods-pipeline-image/pull/7))
+
 ## [0.2.0] - 2023-10-09
 
 ### Changed
