@@ -1,4 +1,6 @@
 ARG GO_IMG_VERSION=1.21.4
+ARG UBI_IMG_VERSION=8.9
+
 FROM golang:${GO_IMG_VERSION} as builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -13,7 +15,6 @@ RUN cd cmd/package-image && CGO_ENABLED=0 go build -o /usr/local/bin/ods-package
 
 # Final image
 # Based on https://catalog.redhat.com/software/containers/detail/5dca3d76dd19c71643b226d5?container-tabs=dockerfile.
-ARG UBI_IMG_VERSION=8.9
 FROM registry.access.redhat.com/ubi8:${UBI_IMG_VERSION}
 
 ENV BUILDAH_VERSION=1.32.2 \
