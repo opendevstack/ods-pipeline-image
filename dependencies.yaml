@@ -1,0 +1,48 @@
+# https://github.com/kubernetes-sigs/zeitgeist
+# Use `zeitgeist validate`` to verify that the dependency version is
+# correct in all files referenced in refPaths, and
+# whether any newer version is available upstream.
+# For GitHub API access, export a `GITHUB_TOKEN`.
+dependencies:
+- name: go
+  version: 1.21.4
+  scheme: alpha
+  upstream:
+    flavour: container
+    registry: registry.hub.docker.com/library/golang
+  refPaths:
+  - path: build/images/Dockerfile.package
+    match: GO_IMG_VERSION
+- name: ubi8
+  version: 8.9
+  scheme: alpha
+  upstream:
+    flavour: container
+    registry: registry.access.redhat.com/ubi8
+  refPaths:
+  - path: build/images/Dockerfile.package
+    match: UBI_IMG_VERSION
+- name: trivy
+  version: 0.47.0
+  upstream:
+    flavour: github
+    url: aquasecurity/trivy
+  refPaths:
+  - path: build/images/Dockerfile.package
+    match: TRIVY_VERSION
+- name: skopeo
+  version: 1.13.3
+  upstream:
+    flavour: github
+    url: containers/skopeo
+  refPaths:
+  - path: build/images/Dockerfile.package
+    match: SKOPEO_VERSION
+- name: buildah
+  version: "1.32.2"
+  upstream:
+    flavour: github
+    url: containers/buildah
+  refPaths:
+  - path: build/images/Dockerfile.package
+    match: BUILDAH_VERSION
