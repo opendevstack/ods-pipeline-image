@@ -39,7 +39,7 @@ dependencies:
   - path: build/images/Dockerfile.package
     match: SKOPEO_VERSION
 - name: buildah
-  version: 1.32.2
+  version: 1.31.3
   upstream:
     flavour: github
     url: containers/buildah

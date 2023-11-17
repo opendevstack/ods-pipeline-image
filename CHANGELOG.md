@@ -10,6 +10,10 @@ listed in the changelog.
 
 ## [Unreleased]
 
+### Changed
+
+- Update dependencies ([#8](https://github.com/opendevstack/ods-pipeline-image/pull/8))
+
 ## [0.3.0] - 2023-11-09
 
 ### Changed
