@@ -48,10 +48,6 @@ spec:
       description: Extra parameters passed for the trivy command to generate an SBOM.
       type: string
       default: ''
-    - name: aqua-gate
-      description: Whether the Aqua security scan needs to pass for the task to succeed.
-      type: string
-      default: "false"
   results:
     - description: Digest of the image just built.
       name: image-digest
