@@ -51,8 +51,10 @@ spec:
       type: string
       default: ''
   results:
-    - description: Digest of the image just built.
+    - description: Digest of the image just built (e.g. `sha256:406cf...f9109`).
       name: image-digest
+    - description: Image reference of the image just built (e.g. `image-registry.openshift-image-registry.svc:5000/foo-cd/bar@sha256:406cf...f9109`).
+      name: image-ref
   steps:
     - name: package-image
       # Image is built from build/package/Dockerfile.package.

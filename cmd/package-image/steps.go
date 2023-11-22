@@ -142,6 +142,15 @@ func storeArtifact() PackageStep {
 	}
 }
 
+func storeResults() PackageStep {
+	return func(p *packageImage) (*packageImage, error) {
+		fmt.Println("Writing image-ref result ...")
+		i := p.artifactImage()
+		err := os.WriteFile(tektonResultsImageRefFile, []byte(fmt.Sprintf("%s/%s/%s@%s", i.Registry, i.Repository, i.Name, i.Digest)), 0644)
+		return p, err
+	}
+}
+
 func processExtraTags() PackageStep {
 	return func(p *packageImage) (*packageImage, error) {
 		if len(p.parsedExtraTags) > 0 {

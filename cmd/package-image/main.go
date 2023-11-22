@@ -16,6 +16,7 @@ import (
 const (
 	kubernetesServiceaccountDir  = "/var/run/secrets/kubernetes.io/serviceaccount"
 	tektonResultsImageDigestFile = "/tekton/results/image-digest"
+	tektonResultsImageRefFile    = "/tekton/results/image-ref"
 )
 
 type options struct {
@@ -128,6 +129,7 @@ func main() {
 		generateSBOM(),
 		pushImage(),
 		storeArtifact(),
+		storeResults(),
 	)
 	if err != nil {
 		logger.Errorf(err.Error())

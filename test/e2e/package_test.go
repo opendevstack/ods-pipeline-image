@@ -36,6 +36,24 @@ func TestPackageImageTask(t *testing.T) {
 			wsDir, ctxt := ott.GetSourceWorkspaceContext(t, config)
 			checkResultingFiles(t, ctxt, wsDir)
 			checkResultingImageHelloWorld(t, ctxt, wsDir)
+
+			var resultImageDigest string
+			var resultImageRef string
+			results := run.Status.Results
+			for _, v := range results {
+				if v.Name == "image-ref" {
+					resultImageRef = v.Value.StringVal
+				} else if v.Name == "image-digest" {
+					resultImageDigest = v.Value.StringVal
+				}
+			}
+			if resultImageDigest == "" {
+				t.Fatal("want result 'image-digest' to be set but it was empty")
+			}
+			wantImageRef := fmt.Sprintf("ods-pipeline-registry.kind:5000/%s/%s@%s", namespaceConfig.Name, filepath.Base(wsDir), resultImageDigest)
+			if resultImageRef != wantImageRef {
+				t.Fatalf("want image ref %q, got %q", wantImageRef, resultImageRef)
+			}
 		}),
 	); err != nil {
 		t.Fatal(err)
