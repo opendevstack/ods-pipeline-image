@@ -48,6 +48,13 @@ spec:
       description: Extra parameters passed for the trivy command to generate an SBOM.
       type: string
       default: ''
+    - name: cosign-key
+      description: |
+        Cosign Key. When set, the image will be signed with cosign using the specified key.
+        To reference a K8s secret, use k8s://<namespace>/<secret>. The secret must have a field
+        named `cosign.pub` containing the public key.
+      type: string
+      default: ''
   results:
     - description: Digest of the image just built (e.g. `sha256:406cf...f9109`).
       name: image-digest
@@ -92,7 +99,8 @@ spec:
           -context-dir=$(params.docker-dir) \
           -buildah-build-extra-args=$(params.buildah-build-extra-args) \
           -buildah-push-extra-args=$(params.buildah-push-extra-args) \
-          -trivy-sbom-extra-args=$(params.trivy-sbom-extra-args)
+          -trivy-sbom-extra-args=$(params.trivy-sbom-extra-args) \
+          -cosign-key=$(params.cosign-key)
 
         # As this task does not run unter uid 1001, chown created artifacts
         # to make them deletable by ods-start's cleanup procedure.
