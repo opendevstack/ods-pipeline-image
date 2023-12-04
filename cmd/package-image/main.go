@@ -16,6 +16,8 @@ import (
 const (
 	kubernetesServiceaccountDir  = "/var/run/secrets/kubernetes.io/serviceaccount"
 	tektonResultsImageDigestFile = "/tekton/results/image-digest"
+	tektonResultsImageRefFile    = "/tekton/results/image-ref"
+	kindRegistry                 = "ods-pipeline-registry.kind"
 )
 
 type options struct {
@@ -36,6 +38,7 @@ type options struct {
 	buildahBuildExtraArgs string
 	buildahPushExtraArgs  string
 	trivySBOMExtraArgs    string
+	cosignKey             string
 	debug                 bool
 }
 
@@ -88,6 +91,7 @@ var defaultOptions = options{
 	buildahBuildExtraArgs: "",
 	buildahPushExtraArgs:  "",
 	trivySBOMExtraArgs:    "",
+	cosignKey:             "",
 	debug:                 (os.Getenv("DEBUG") == "true"),
 }
 
@@ -110,6 +114,7 @@ func main() {
 	flag.StringVar(&opts.buildahBuildExtraArgs, "buildah-build-extra-args", defaultOptions.buildahBuildExtraArgs, "extra parameters passed for the build command when building images")
 	flag.StringVar(&opts.buildahPushExtraArgs, "buildah-push-extra-args", defaultOptions.buildahPushExtraArgs, "extra parameters passed for the push command when pushing images")
 	flag.StringVar(&opts.trivySBOMExtraArgs, "trivy-sbom-extra-args", defaultOptions.trivySBOMExtraArgs, "extra parameters passed for the trivy command to generate an SBOM")
+	flag.StringVar(&opts.cosignKey, "cosign-key", defaultOptions.cosignKey, "cosign key to sign the image with")
 	flag.BoolVar(&opts.debug, "debug", defaultOptions.debug, "debug mode")
 	flag.Parse()
 	var logger logging.LeveledLoggerInterface
@@ -127,7 +132,9 @@ func main() {
 		buildImageAndGenerateTar(),
 		generateSBOM(),
 		pushImage(),
+		signImage(opts.cosignKey),
 		storeArtifact(),
+		storeResults(),
 	)
 	if err != nil {
 		logger.Errorf(err.Error())

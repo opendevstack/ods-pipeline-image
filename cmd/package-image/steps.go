@@ -3,12 +3,14 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/google/shlex"
 	"github.com/opendevstack/ods-pipeline-image/internal/image"
+	"github.com/opendevstack/ods-pipeline/pkg/artifact"
 	"github.com/opendevstack/ods-pipeline/pkg/pipelinectxt"
 )
 
@@ -123,6 +125,24 @@ func pushImage() PackageStep {
 	}
 }
 
+func signImage(cosignKey string) PackageStep {
+	return func(p *packageImage) (*packageImage, error) {
+		if cosignKey != "" {
+			i := imageRef(p.artifactImage())
+			c := NewCosignClient(cosignKey)
+			log.Printf("Signing image %s with %s ...\n", p.imageName(), cosignKey)
+			if err := c.Sign(i); err != nil {
+				return p, fmt.Errorf("signing: %s", err)
+			}
+			log.Println("Generating SBOM attestation ...")
+			if err := c.Attest(i, pipelinectxt.SBOMsFormat, p.sbomFile); err != nil {
+				return p, fmt.Errorf("attesting SBOM: %s", err)
+			}
+		}
+		return p, nil
+	}
+}
+
 func storeArtifact() PackageStep {
 	return func(p *packageImage) (*packageImage, error) {
 		fmt.Println("Writing image artifact ...")
@@ -139,6 +159,14 @@ func storeArtifact() PackageStep {
 		}
 
 		return p, nil
+	}
+}
+
+func storeResults() PackageStep {
+	return func(p *packageImage) (*packageImage, error) {
+		fmt.Println("Writing image-ref result ...")
+		err := os.WriteFile(tektonResultsImageRefFile, []byte(imageRef(p.artifactImage())), 0644)
+		return p, err
 	}
 }
 
@@ -177,4 +205,8 @@ func imageTagArtifactExists(p *packageImage, tag string) error {
 	filename := fmt.Sprintf("%s-%s.json", p.imageId.ImageStream, tag)
 	_, err := os.Stat(filepath.Join(imageArtifactsDir, filename))
 	return err
+}
+
+func imageRef(i artifact.Image) string {
+	return fmt.Sprintf("%s/%s/%s@%s", i.Registry, i.Repository, i.Name, i.Digest)
 }

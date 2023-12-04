@@ -49,7 +49,7 @@ func (p *packageImage) buildahPush(outWriter, errWriter io.Writer) error {
 		log.Printf("could not parse extra args (%s): %s", opts.buildahPushExtraArgs, err)
 	}
 	tlsVerify := opts.tlsVerify
-	if strings.HasPrefix(opts.registry, "ods-pipeline-registry.kind") {
+	if strings.HasPrefix(opts.registry, kindRegistry) {
 		tlsVerify = false
 	}
 	args := []string{

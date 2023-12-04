@@ -14,7 +14,7 @@ func (p *packageImage) skopeoTag(idt *image.IdentityWithTag, outWriter, errWrite
 	tlsVerify := p.opts.tlsVerify
 	// TLS verification of the KinD registry is not possible at the moment as
 	// requests error out with "server gave HTTP response to HTTPS client".
-	if strings.HasPrefix(p.opts.registry, "ods-pipeline-registry.kind") {
+	if strings.HasPrefix(p.opts.registry, kindRegistry) {
 		tlsVerify = false
 	}
 	args := []string{

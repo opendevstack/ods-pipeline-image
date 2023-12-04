@@ -46,3 +46,11 @@ dependencies:
   refPaths:
   - path: build/images/Dockerfile.package
     match: BUILDAH_VERSION
+- name: cosign
+  version: 2.2.1
+  upstream:
+    flavour: github
+    url: sigstore/cosign
+  refPaths:
+  - path: build/images/Dockerfile.package
+    match: COSIGN_VERSION

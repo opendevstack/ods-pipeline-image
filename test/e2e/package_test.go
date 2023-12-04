@@ -26,19 +26,65 @@ import (
 	"k8s.io/client-go/util/homedir"
 )
 
+const cosignKeySecretName = "cosign-example-key"
+
 func TestPackageImageTask(t *testing.T) {
 	if err := runTask(
 		ott.WithGitSourceWorkspace(t, "../testdata/workspaces/hello-world-app", namespaceConfig.Name),
 		ttr.WithStringParams(map[string]string{
 			"docker-dir": "docker",
+			"cosign-key": fmt.Sprintf("k8s://%s/%s", namespaceConfig.Name, cosignKeySecretName),
 		}),
+		generateCosignKey(),
 		ttr.AfterRun(func(config *ttr.TaskRunConfig, run *tekton.TaskRun, logs bytes.Buffer) {
 			wsDir, ctxt := ott.GetSourceWorkspaceContext(t, config)
 			checkResultingFiles(t, ctxt, wsDir)
 			checkResultingImageHelloWorld(t, ctxt, wsDir)
+
+			var resultImageDigest string
+			var resultImageRef string
+			results := run.Status.Results
+			for _, v := range results {
+				if v.Name == "image-ref" {
+					resultImageRef = v.Value.StringVal
+				} else if v.Name == "image-digest" {
+					resultImageDigest = v.Value.StringVal
+				}
+			}
+			if resultImageDigest == "" {
+				t.Fatal("want result 'image-digest' to be set but it was empty")
+			}
+			wantImageRef := fmt.Sprintf("ods-pipeline-registry.kind:5000/%s/%s@%s", namespaceConfig.Name, filepath.Base(wsDir), resultImageDigest)
+			if resultImageRef != wantImageRef {
+				t.Fatalf("want image ref %q, got %q", wantImageRef, resultImageRef)
+			}
+
+			// check signature + SBOM attestation
+			imageRef := fmt.Sprintf("localhost:5000/%s/%s@%s", namespaceConfig.Name, filepath.Base(wsDir), resultImageDigest)
+			cmd := exec.Command("cosign", "verify-attestation", "--insecure-ignore-tlog=true", "--key", fmt.Sprintf("k8s://%s/%s", namespaceConfig.Name, cosignKeySecretName), "--type=spdx", imageRef)
+			buf := new(bytes.Buffer)
+			cmd.Stderr = buf
+			err := cmd.Run()
+			if err != nil {
+				t.Fatalf("verify-attestation: %s - %s", err, buf.String())
+			}
 		}),
 	); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func generateCosignKey() ttr.TaskRunOpt {
+	return func(c *ttr.TaskRunConfig) error {
+		cmd := exec.Command("cosign", "generate-key-pair", fmt.Sprintf("k8s://%s/%s", namespaceConfig.Name, cosignKeySecretName))
+		buf := new(bytes.Buffer)
+		cmd.Stderr = buf
+		cmd.Env = append(os.Environ(), "COSIGN_PASSWORD=s3cr3t")
+		err := cmd.Run()
+		if err != nil {
+			return fmt.Errorf("generate-key-pair: %s - %s", err, buf.String())
+		}
+		return os.Remove("cosign.pub")
 	}
 }
 

@@ -1,6 +1,5 @@
 ARG GO_IMG_VERSION=1.21.4
 ARG UBI_IMG_VERSION=8.9
-
 FROM golang:${GO_IMG_VERSION} as builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -16,12 +15,18 @@ RUN cd cmd/package-image && CGO_ENABLED=0 go build -o /usr/local/bin/ods-package
 # Final image
 # Based on https://catalog.redhat.com/software/containers/detail/5dca3d76dd19c71643b226d5?container-tabs=dockerfile.
 FROM registry.access.redhat.com/ubi8:${UBI_IMG_VERSION}
+ARG TARGETARCH
 
 ENV BUILDAH_VERSION=1.31.3 \
     SKOPEO_VERSION=1.13.3 \
-    TRIVY_VERSION=0.47.0
+    TRIVY_VERSION=0.47.0 \
+    COSIGN_VERSION=2.2.1
 
 COPY --from=builder /usr/local/bin/ods-package-image /usr/local/bin/ods-package-image
+
+RUN curl -fsSLO https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-${TARGETARCH} && \
+    mv cosign-linux-${TARGETARCH} /usr/local/bin/cosign && \
+    chmod +x /usr/local/bin/cosign
 
 # Don't include container-selinux and remove
 # directories used by yum that are just taking
